@@ -37,7 +37,7 @@ DIAGNÓSTICO
 Precisa de Python 3.9+ e git. **Zero dependências externas.**
 
 ```bash
-pip install git+https://github.com/ThiagoFernandes1/raiox
+pip install git+https://github.com/ThiagoFernandes1/RAIOX
 ```
 
 ## Uso
@@ -103,7 +103,7 @@ src/raiox/
 ## Desenvolvimento
 
 ```bash
-git clone https://github.com/ThiagoFernandes1/raiox && cd raiox
+git clone https://github.com/ThiagoFernandes1/RAIOX && cd RAIOX
 pip install -e .
 python -m unittest discover -s tests -v
 ```

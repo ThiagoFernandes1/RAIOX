@@ -21,7 +21,7 @@ classifiers = [
 ]
 
 [project.urls]
-Repository = "https://github.com/ThiagoFernandes1/raiox"
+Repository = "https://github.com/ThiagoFernandes1/RAIOX"
 
 [project.scripts]
 raiox = "raiox.cli:main"
