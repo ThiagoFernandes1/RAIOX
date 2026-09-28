@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "raiox"
+dynamic = ["version"]
+description = "Raio-X do seu repositório git: hotspots, bus factor, acoplamento oculto e conhecimento órfão."
+readme = "README.md"
+license = { text = "MIT" }
+authors = [{ name = "Thiago Fernandes" }]
+requires-python = ">=3.9"
+dependencies = []
+keywords = ["git", "code-analysis", "hotspots", "bus-factor", "technical-debt", "cli"]
+classifiers = [
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Topic :: Software Development :: Quality Assurance",
+]
+
+[project.urls]
+Repository = "https://github.com/ThiagoFernandes1/raiox"
+
+[project.scripts]
+raiox = "raiox.cli:main"
+
+[tool.setuptools.dynamic]
+version = { attr = "raiox.__version__" }
+
+[tool.setuptools.package-data]
+raiox = ["template.html"]

@@ -1,0 +1,316 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Raio-X · __TITLE__</title>
+<style>
+:root {
+  --bg: #f6f7f9; --surface: #ffffff; --text: #1b1f24; --muted: #5f6b7a; --line: #e3e7ec;
+  --accent: #2f6fed; --hot: #e5484d; --warm: #f5a524; --cold: #dfe7f1; --ok: #30a46c;
+  --shadow: 0 1px 2px rgba(16,24,40,.06), 0 1px 3px rgba(16,24,40,.08);
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0f1216; --surface: #171b21; --text: #e6e9ee; --muted: #8b95a3; --line: #262c35;
+    --accent: #5b8def; --hot: #f2555a; --warm: #f7b93e; --cold: #222a35; --ok: #3dd68c;
+    --shadow: none;
+  }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text);
+  font: 15px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+main { max-width: 1120px; margin: 0 auto; padding: 32px 16px 64px; }
+header h1 { margin: 0; font-size: 28px; letter-spacing: -.02em; }
+header h1 span { display: inline-block; background: var(--text); color: var(--bg); padding: 0 8px;
+  border-radius: 6px; margin-right: 8px; font-size: 18px; vertical-align: 4px; letter-spacing: .08em; }
+header p { margin: 4px 0 0; color: var(--muted); }
+h2 { font-size: 18px; margin: 0 0 4px; }
+.sub { color: var(--muted); margin: 0 0 16px; font-size: 14px; }
+section { background: var(--surface); border: 1px solid var(--line); border-radius: 12px;
+  padding: 20px; margin-top: 20px; box-shadow: var(--shadow); }
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-top: 24px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; box-shadow: var(--shadow); }
+.card b { display: block; font-size: 26px; font-variant-numeric: tabular-nums; letter-spacing: -.02em; }
+.card small { color: var(--muted); }
+.card.alert b { color: var(--hot); }
+.insight { display: grid; grid-template-columns: 70px 1fr; gap: 12px; padding: 12px 0; border-top: 1px solid var(--line); }
+.insight:first-of-type { border-top: 0; }
+.insight p { margin: 2px 0 0; color: var(--muted); font-size: 14px; }
+.pill { font-size: 12px; font-weight: 600; border-radius: 99px; padding: 2px 10px; height: fit-content; text-align: center; }
+.pill.alto { background: color-mix(in srgb, var(--hot) 18%, transparent); color: var(--hot); }
+.pill.medio { background: color-mix(in srgb, var(--warm) 22%, transparent); color: var(--warm); }
+.pill.info { background: color-mix(in srgb, var(--accent) 16%, transparent); color: var(--accent); }
+#treemap { width: 100%; display: block; }
+#treemap rect { stroke: var(--surface); stroke-width: 1.5; cursor: pointer; }
+#treemap rect:hover { stroke: var(--text); }
+#treemap text { font-size: 11px; pointer-events: none; fill: var(--text); }
+.legend { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: 13px; margin-top: 10px; }
+.legend i { width: 160px; height: 10px; border-radius: 99px;
+  background: linear-gradient(90deg, var(--cold), var(--warm), var(--hot)); }
+.detail { margin-top: 12px; min-height: 22px; font-size: 14px; }
+.toolbar { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-bottom: 12px; }
+input[type=search] { flex: 1; min-width: 180px; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--line);
+  background: var(--bg); color: var(--text); font: inherit; }
+label { color: var(--muted); font-size: 14px; display: flex; gap: 6px; align-items: center; }
+.scroll { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+th { color: var(--muted); font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: .04em;
+  cursor: pointer; user-select: none; }
+th.num, td.num { text-align: right; font-variant-numeric: tabular-nums; }
+td.path { white-space: normal; word-break: break-all; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 13px; }
+.meter { display: inline-block; width: 60px; height: 6px; border-radius: 99px; background: var(--cold);
+  vertical-align: middle; margin-right: 8px; overflow: hidden; }
+.meter > span { display: block; height: 100%; border-radius: 99px; }
+.tag { font-size: 11px; font-weight: 600; padding: 1px 8px; border-radius: 99px;
+  background: color-mix(in srgb, var(--warm) 22%, transparent); color: var(--warm); margin-left: 6px; }
+.muted { color: var(--muted); }
+button { font: inherit; font-size: 14px; background: none; border: 1px solid var(--line); color: var(--text);
+  border-radius: 8px; padding: 6px 12px; cursor: pointer; margin-top: 12px; }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.grid2 section { margin-top: 0; }
+.row-gap { margin-top: 20px; }
+#timeline { width: 100%; height: 160px; display: block; }
+#timeline rect { fill: var(--accent); }
+.axis { fill: var(--muted); font-size: 11px; }
+.agebar { display: flex; height: 28px; border-radius: 8px; overflow: hidden; margin: 8px 0 12px; }
+.agebar div { height: 100%; }
+.agelegend div { display: flex; justify-content: space-between; font-size: 14px; padding: 4px 0; }
+.agelegend i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 8px; }
+footer { color: var(--muted); font-size: 13px; text-align: center; margin-top: 32px; }
+footer a { color: inherit; }
+@media (max-width: 760px) { .grid2 { grid-template-columns: 1fr; } .insight { grid-template-columns: 1fr; gap: 4px; } }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1><span>RAIO-X</span><em id="repo" style="font-style:normal"></em></h1>
+    <p id="period"></p>
+  </header>
+
+  <div class="cards" id="cards"></div>
+
+  <section>
+    <h2>Diagnóstico</h2>
+    <p class="sub">O que o histórico do git diz sobre a saúde deste código.</p>
+    <div id="insights"></div>
+  </section>
+
+  <section>
+    <h2>Mapa de hotspots</h2>
+    <p class="sub">Cada retângulo é um arquivo: o tamanho é o número de linhas; a cor, o quanto ele é um hotspot
+      (muda com frequência <em>e</em> é complexo). Clique para ver os detalhes.</p>
+    <svg id="treemap" role="img" aria-label="Mapa de hotspots"></svg>
+    <div class="legend">frio <i></i> quente</div>
+    <div class="detail" id="detail"></div>
+  </section>
+
+  <section>
+    <h2>Hotspots</h2>
+    <p class="sub">Clique nos cabeçalhos para ordenar.</p>
+    <div class="toolbar"><input type="search" id="filter" placeholder="Filtrar por caminho…"></div>
+    <div class="scroll"><table id="hot"></table></div>
+    <button id="more" hidden>Mostrar todos</button>
+  </section>
+
+  <section>
+    <h2>Acoplamento temporal</h2>
+    <p class="sub">Pares de arquivos que costumam mudar no mesmo commit. <b>Oculto</b> = estão em pastas diferentes
+      e nenhum deles é teste: uma dependência que não aparece nos imports.</p>
+    <div class="toolbar"><label><input type="checkbox" id="onlyHidden"> Só acoplamentos ocultos</label></div>
+    <div class="scroll"><table id="coupling"></table></div>
+  </section>
+
+  <div class="grid2 row-gap">
+    <section>
+      <h2>Autores</h2>
+      <p class="sub">Arquivos = quantos arquivos têm essa pessoa como principal autora.</p>
+      <div class="scroll"><table id="authors"></table></div>
+    </section>
+    <section>
+      <h2>Idade do código</h2>
+      <p class="sub">Linhas agrupadas pela última vez em que o arquivo mudou.</p>
+      <div id="age"></div>
+    </section>
+  </div>
+
+  <section>
+    <h2>Atividade</h2>
+    <p class="sub">Commits por semana.</p>
+    <svg id="timeline" role="img" aria-label="Commits por semana"></svg>
+  </section>
+
+  <footer>Gerado por <a href="https://github.com/ThiagoFernandes1/raiox">raiox</a> em <span id="gen"></span></footer>
+</main>
+
+<script id="data" type="application/json">__DATA__</script>
+<script>
+const R = JSON.parse(document.getElementById('data').textContent);
+const $ = s => document.querySelector(s);
+const nf = new Intl.NumberFormat('pt-BR');
+const n = v => nf.format(Math.round(v));
+const pct = v => Math.round(v * 100) + '%';
+const date = s => new Date(s).toLocaleDateString('pt-BR');
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const heat = score => score < 50
+  ? `color-mix(in oklab, var(--warm) ${score * 2}%, var(--cold))`
+  : `color-mix(in oklab, var(--hot) ${(score - 50) * 2}%, var(--warm))`;
+const meter = (v, color) => `<span class="meter"><span style="width:${Math.max(2, v * 100)}%;background:${color}"></span></span>`;
+
+// ---------- Cabeçalho e cartões ----------
+const S = R.summary;
+$('#repo').textContent = R.repo;
+$('#period').textContent = `${date(S.first_commit)} → ${date(S.last_commit)}`;
+$('#gen').textContent = new Date(R.generated_at).toLocaleString('pt-BR');
+const tfAlert = S.truck_factor <= 1 && S.authors > 1;
+$('#cards').innerHTML = [
+  [n(S.commits), 'commits'],
+  [`${S.authors}`, `${S.authors === 1 ? 'autor' : 'autores'} · ${S.active_authors} ${S.active_authors === 1 ? 'ativo' : 'ativos'}`],
+  [n(S.files), 'arquivos analisados'],
+  [n(S.loc), 'linhas de código'],
+  [`${S.truck_factor}`, 'bus factor', tfAlert],
+].map(([v, l, alert]) => `<div class="card${alert ? ' alert' : ''}"><b>${esc(v)}</b><small>${esc(l)}</small></div>`).join('');
+
+// ---------- Diagnóstico ----------
+const LEVEL = { alto: 'alto', medio: 'médio', info: 'info' };
+$('#insights').innerHTML = R.insights.map(i =>
+  `<div class="insight"><span class="pill ${i.level}">${LEVEL[i.level]}</span>
+   <div><b>${esc(i.title)}</b><p>${esc(i.detail)}</p></div></div>`).join('');
+
+// ---------- Treemap (squarified) ----------
+function squarify(items, x, y, w, h) {
+  const out = [];
+  const total = items.reduce((s, i) => s + i.value, 0);
+  if (!total) return out;
+  let rest = items.map(i => ({ ...i, area: i.value * (w * h) / total }));
+  const worst = (row, side) => {
+    const s = row.reduce((a, b) => a + b.area, 0);
+    const mx = Math.max(...row.map(r => r.area)), mn = Math.min(...row.map(r => r.area));
+    return Math.max(side * side * mx / (s * s), (s * s) / (side * side * mn));
+  };
+  while (rest.length) {
+    const side = Math.min(w, h);
+    let i = 1;
+    while (i < rest.length && worst(rest.slice(0, i + 1), side) <= worst(rest.slice(0, i), side)) i++;
+    const row = rest.slice(0, i);
+    const s = row.reduce((a, b) => a + b.area, 0);
+    if (w >= h) {
+      const cw = s / h; let cy = y;
+      for (const r of row) { const rh = r.area / cw; out.push({ ...r, x, y: cy, w: cw, h: rh }); cy += rh; }
+      x += cw; w -= cw;
+    } else {
+      const rh = s / w; let cx = x;
+      for (const r of row) { const rw = r.area / rh; out.push({ ...r, x: cx, y, w: rw, h: rh }); cx += rw; }
+      y += rh; h -= rh;
+    }
+    rest = rest.slice(i);
+  }
+  return out;
+}
+
+function showDetail(h) {
+  $('#detail').innerHTML = `<b style="font-family:ui-monospace,monospace">${esc(h.path)}</b> —
+    score <b>${Math.round(h.score)}</b> · ${h.revisions} commits · ${n(h.loc)} linhas ·
+    complexidade ${n(h.complexity)} · dono: ${esc(h.owner)} (${pct(h.owner_share)})${h.owner_active ? '' : ' <span class="tag">inativo</span>'}
+    · última mudança há ${n(h.age_days)} dias`;
+}
+
+function drawTreemap() {
+  const svg = $('#treemap');
+  const W = svg.clientWidth || 800, H = Math.max(260, Math.min(480, W * 0.5));
+  svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+  svg.setAttribute('height', H);
+  const items = [...R.hotspots].sort((a, b) => b.loc - a.loc).slice(0, 400).map(h => ({ ...h, value: h.loc }));
+  const cells = squarify(items, 0, 0, W, H);
+  svg.innerHTML = cells.map((c, i) => {
+    const name = c.path.split('/').pop();
+    const label = c.w > 60 && c.h > 18
+      ? `<text x="${c.x + 5}" y="${c.y + 14}">${esc(name.length * 6.5 > c.w - 8 ? name.slice(0, Math.floor((c.w - 8) / 6.5) - 1) + '…' : name)}</text>` : '';
+    return `<rect data-i="${i}" x="${c.x}" y="${c.y}" width="${Math.max(0, c.w)}" height="${Math.max(0, c.h)}"
+      fill="${heat(c.score)}"><title>${esc(c.path)} — score ${Math.round(c.score)}</title></rect>${label}`;
+  }).join('');
+  svg.onclick = e => { const i = e.target.dataset && e.target.dataset.i; if (i !== undefined) showDetail(cells[+i]); };
+}
+drawTreemap();
+let resizeTimer;
+addEventListener('resize', () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(drawTreemap, 150); });
+if (R.hotspots.length) showDetail(R.hotspots[0]);
+
+// ---------- Tabela de hotspots ----------
+const COLS = [
+  ['score', 'Score', true], ['path', 'Arquivo', false], ['revisions', 'Commits', true],
+  ['loc', 'Linhas', true], ['complexity', 'Complexidade', true], ['owner', 'Dono', false], ['age_days', 'Dias sem mudar', true],
+];
+let sortKey = 'score', sortDir = -1, showAll = false;
+function drawHot() {
+  const q = $('#filter').value.toLowerCase();
+  let rows = R.hotspots.filter(h => h.path.toLowerCase().includes(q));
+  rows.sort((a, b) => (a[sortKey] > b[sortKey] ? 1 : a[sortKey] < b[sortKey] ? -1 : 0) * sortDir);
+  const limit = showAll ? rows.length : 25;
+  $('#more').hidden = rows.length <= limit;
+  $('#hot').innerHTML = `<thead><tr>${COLS.map(([k, l, num]) =>
+    `<th data-k="${k}" class="${num ? 'num' : ''}">${l}${k === sortKey ? (sortDir < 0 ? ' ↓' : ' ↑') : ''}</th>`).join('')}</tr></thead>
+    <tbody>${rows.slice(0, limit).map(h => `<tr>
+      <td class="num">${meter(h.score / 100, heat(h.score))}${Math.round(h.score)}</td>
+      <td class="path">${esc(h.path)}</td><td class="num">${h.revisions}</td><td class="num">${n(h.loc)}</td>
+      <td class="num">${n(h.complexity)}</td>
+      <td>${esc(h.owner)} <span class="muted">${pct(h.owner_share)}</span>${h.owner_active ? '' : '<span class="tag">inativo</span>'}</td>
+      <td class="num">${n(h.age_days)}</td></tr>`).join('')}</tbody>`;
+}
+$('#hot').onclick = e => {
+  const k = e.target.dataset.k; if (!k) return;
+  sortDir = k === sortKey ? -sortDir : (k === 'path' || k === 'owner' ? 1 : -1); sortKey = k; drawHot();
+};
+$('#filter').oninput = drawHot;
+$('#more').onclick = () => { showAll = true; drawHot(); };
+drawHot();
+
+// ---------- Acoplamento ----------
+function drawCoupling() {
+  const rows = R.coupling.filter(c => !$('#onlyHidden').checked || c.hidden).slice(0, 100);
+  $('#coupling').innerHTML = rows.length ? `<thead><tr><th class="num">Grau</th><th class="num">Juntos</th><th>Arquivo A</th><th>Arquivo B</th></tr></thead>
+    <tbody>${rows.map(c => `<tr><td class="num">${meter(c.degree, 'var(--accent)')}${pct(c.degree)}</td>
+      <td class="num">${c.shared}×</td><td class="path">${esc(c.a)}</td>
+      <td class="path">${esc(c.b)}${c.hidden ? '<span class="tag">oculto</span>' : ''}</td></tr>`).join('')}</tbody>`
+    : `<tbody><tr><td class="muted">Nenhum par passou dos limites (≥ ${R.options.min_shared} commits juntos e ≥ ${pct(R.options.min_coupling)}).</td></tr></tbody>`;
+}
+$('#onlyHidden').onchange = drawCoupling;
+drawCoupling();
+
+// ---------- Autores ----------
+const maxC = Math.max(1, ...R.authors.map(a => a.commits));
+$('#authors').innerHTML = `<thead><tr><th>Autor</th><th class="num">Commits</th><th class="num">Arquivos</th></tr></thead>
+  <tbody>${R.authors.slice(0, 20).map(a => `<tr><td>${esc(a.name)}${a.active ? '' : '<span class="tag">inativo</span>'}</td>
+  <td class="num">${meter(a.commits / maxC, 'var(--accent)')}${n(a.commits)}</td><td class="num">${n(a.files_owned)}</td></tr>`).join('')}</tbody>`;
+
+// ---------- Idade ----------
+const AGE_COLORS = ['var(--ok)', 'var(--accent)', 'var(--warm)', 'var(--muted)'];
+const totalLoc = R.age.reduce((s, a) => s + a.loc, 0) || 1;
+$('#age').innerHTML = `<div class="agebar">${R.age.map((a, i) =>
+  `<div style="width:${a.loc / totalLoc * 100}%;background:${AGE_COLORS[i]}" title="${a.bucket}"></div>`).join('')}</div>
+  <div class="agelegend">${R.age.map((a, i) => `<div><span><i style="background:${AGE_COLORS[i]}"></i>${a.bucket}</span>
+  <span class="muted">${n(a.files)} arquivos · ${n(a.loc)} linhas · ${pct(a.loc / totalLoc)}</span></div>`).join('')}</div>`;
+
+// ---------- Linha do tempo ----------
+function drawTimeline() {
+  const svg = $('#timeline'), T = R.timeline;
+  const W = svg.clientWidth || 800, H = 160, pad = 22;
+  svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+  const max = Math.max(1, ...T.map(t => t.commits));
+  const bw = W / Math.max(1, T.length);
+  const bars = T.map((t, i) => {
+    const h = t.commits / max * (H - pad - 8);
+    return `<rect x="${i * bw + 1}" y="${H - pad - h}" width="${Math.max(1, bw - 2)}" height="${h}" rx="2">
+      <title>Semana de ${date(t.week + 'T12:00')}: ${t.commits} commits</title></rect>`;
+  }).join('');
+  const ticks = T.length ? [0, Math.floor(T.length / 2), T.length - 1].filter((v, i, a) => a.indexOf(v) === i).map(i =>
+    `<text class="axis" x="${Math.min(W - 60, i * bw)}" y="${H - 4}">${date(T[i].week + 'T12:00')}</text>`).join('') : '';
+  svg.innerHTML = bars + ticks + `<text class="axis" x="${W}" y="12" text-anchor="end">máx. ${max}/semana</text>`;
+}
+drawTimeline();
+addEventListener('resize', drawTimeline);
+</script>
+</body>
+</html>
